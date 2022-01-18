@@ -82,6 +82,9 @@ void get_input_state(uint8_t *values, int32_t mask) {
 			values[i] = 0;
 			for (int j=0; j< INPUTS_TYPES; ++j)
 				values[i] |= inputsValues[i*4 + j] << j;
+			#ifdef REVERSE_INPUT_LOGIC
+			values[i] ^= REVERSE_INPUT_LOGIC;
+			#endif
 		}
 		mask = mask >> 1;
 	}
