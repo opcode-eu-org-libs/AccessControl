@@ -42,9 +42,10 @@ Reader* init_reader(const char* readerDevice, bool use_rs485_te, uint8_t readerA
 	
 	reader->user_data = readerUserData;
 
-	epso_write_read(readerSerial, reader->address, BEEP_ON,  BEEP_LEN, 0, 0);
-	epso_write_read(readerSerial, reader->address, LED_CMD,  LED_DEFAULT, 0, 0);
-	epso_write_read(readerSerial, reader->address, BEEP_OFF, BEEP_LEN, 0, 0);
+	char *xbuf[16], xbuflen=16;
+	epso_write_read(readerSerial, reader->address, BEEP_ON,  BEEP_LEN, xbuf, xbuflen);
+	epso_write_read(readerSerial, reader->address, LED_CMD,  LED_DEFAULT, xbuf, xbuflen);
+	epso_write_read(readerSerial, reader->address, BEEP_OFF, BEEP_LEN, xbuf, xbuflen);
 	
 	return reader;
 }
@@ -72,34 +73,36 @@ void clear_reader_data(Reader* reader) {
 }
 
 void reader_signal(char signal, Reader* reader) {
+	char *xbuf[16], xbuflen=16;
+	
 	switch(signal){
 		case SIGNAL_OK:
-			epso_write_read(reader->serial, reader->address, LED_CMD,  LED_GREEN, 0, 0);
+			epso_write_read(reader->serial, reader->address, LED_CMD,  LED_GREEN, xbuf, xbuflen);
 			sleep(3);
-			epso_write_read(reader->serial, reader->address, LED_CMD,  LED_DEFAULT, 0, 0);
+			epso_write_read(reader->serial, reader->address, LED_CMD,  LED_DEFAULT, xbuf, xbuflen);
 			break;
 		case SIGNAL_DOOR_OPEN:
-			epso_write_read(reader->serial, reader->address, LED_CMD,  LED_GREEN, 0, 0);
+			epso_write_read(reader->serial, reader->address, LED_CMD,  LED_GREEN, xbuf, xbuflen);
 			break;
 		case SIGNAL_DOOR_LOCK:
-			epso_write_read(reader->serial, reader->address, LED_CMD,  LED_DEFAULT, 0, 0);
+			epso_write_read(reader->serial, reader->address, LED_CMD,  LED_DEFAULT, xbuf, xbuflen);
 			break;
 		case SIGNAL_ERR:
 		case SIGNAL_ERR_AUTH:
 		case SIGNAL_ERR_COMM:
-			epso_write_read(reader->serial, reader->address, LED_CMD,  LED_RED, 0, 0);
-			epso_write_read(reader->serial, reader->address, BEEP_ON,  BEEP_LEN, 0, 0);
+			epso_write_read(reader->serial, reader->address, LED_CMD,  LED_RED, xbuf, xbuflen);
+			epso_write_read(reader->serial, reader->address, BEEP_ON,  BEEP_LEN, xbuf, xbuflen);
 			sleep(1);
-			epso_write_read(reader->serial, reader->address, BEEP_OFF, BEEP_LEN, 0, 0);
-			epso_write_read(reader->serial, reader->address, LED_CMD,  LED_DEFAULT, 0, 0);
+			epso_write_read(reader->serial, reader->address, BEEP_OFF, BEEP_LEN, xbuf, xbuflen);
+			epso_write_read(reader->serial, reader->address, LED_CMD,  LED_DEFAULT, xbuf, xbuflen);
 			break;
 		case SIGNAL_ERR_USAGE:
-			epso_write_read(reader->serial, reader->address, BEEP_ON,  BEEP_LEN, 0, 0);
+			epso_write_read(reader->serial, reader->address, BEEP_ON,  BEEP_LEN, xbuf, xbuflen);
 			sleep(1);
-			epso_write_read(reader->serial, reader->address, BEEP_OFF, BEEP_LEN, 0, 0);
+			epso_write_read(reader->serial, reader->address, BEEP_OFF, BEEP_LEN, xbuf, xbuflen);
 			break;
 		case SIGNAL_PIN:
-			epso_write_read(reader->serial, reader->address, LED_CMD, LED_ORANGE, 0, 0);
+			epso_write_read(reader->serial, reader->address, LED_CMD, LED_ORANGE, xbuf, xbuflen);
 			break;
 		case SIGNAL_PIN_QUIET:
 			break;
