@@ -42,7 +42,7 @@ Reader* init_reader(const char* readerDevice, bool use_rs485_te, uint8_t readerA
 	
 	reader->user_data = readerUserData;
 
-	char *xbuf[16], xbuflen=16;
+	uint8_t xbuf[16], xbuflen=16;
 	epso_write_read(readerSerial, reader->address, BEEP_ON,  BEEP_LEN, xbuf, xbuflen);
 	epso_write_read(readerSerial, reader->address, LED_CMD,  LED_DEFAULT, xbuf, xbuflen);
 	epso_write_read(readerSerial, reader->address, BEEP_OFF, BEEP_LEN, xbuf, xbuflen);
@@ -73,7 +73,7 @@ void clear_reader_data(Reader* reader) {
 }
 
 void reader_signal(char signal, Reader* reader) {
-	char *xbuf[16], xbuflen=16;
+	uint8_t xbuf[16], xbuflen=16;
 	
 	switch(signal){
 		case SIGNAL_OK:
