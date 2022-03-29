@@ -53,7 +53,7 @@ void set_door_state(enum DoorOperations doorOperation, int32_t mask) {
 			int ret  __attribute__((unused));
 			ret = gpiod_ctxless_set_value(GPIO_DEVICE, outputs[i], val, false, "gpioset", 0, 0);
 			#if GPIO_DEBUG
-			printf("Do door operation %d, mask=%04X, ret=%d\n", doorOperation, mask, ret);
+			printf("Do door operation %d, mask=0x%02X, ret=%d\n", doorOperation, mask, ret);
 			#endif
 		}
 	}

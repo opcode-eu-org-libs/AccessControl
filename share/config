@@ -1,3 +1,26 @@
-# doorname   mode_A  serial_dev_A  rs485_A  address_A  mode_B  serial_dev_B  rs485_B  address_B  fullMask  maskOffset  airLockPartner
-doorA        0x10    /dev/ttyS2    1        0x7f       -       -             -        -          0         1           -
-
+# doorname   mode_A  serial_dev_A  rs485_A  address_A  mode_B  serial_dev_B  rs485_B  address_B  maskOffset  fullMask  airLockPartner
+#
+# * one "door" per line
+# * each doors support two readers A and B
+# * door can support multiple subdoors (e.g. buildings level for elevators)
+#
+# doorname = name of door for this controller used in database (use % replaced subdoor numeric id, e.g. buildings level for elevators)
+# mode_A          = mode for reader A:
+#	0x01 (only card)
+#	0x02 (only pin)
+#	0x10 (card OR pin)
+#	0x20 (card AND pin)
+#	0x30 (ALWAYS card AND pin, even for cards allowing usage without pin)
+#	0x40 (card compare / two card; e.g. physical key access management: first card personal, second card tag for key)
+# serial_dev_A    = device for communication with reader A
+# rs485_A         = 1 when reader A comunication is RS485 half duplex
+# address_A       = address for reader A
+# mode_B          = same as above but for reader B (- for disable second reader)
+# serial_dev_B    = same as above but for reader B (- for disable second reader)
+# rs485_B,        = same as above but for reader B (- for disable second reader)
+# address_B       = same as above but for reader B (- for disable second reader)
+# maskOffset      = output offset (typically used as 1 for second door on this same controler)
+# fullMask        = mask GPIO outputs for all subdoors (0x01 for standard doors, e.g. 0x0f for 4 levels elevator)
+# airLockPartner  = name of airlock partner (- for disable airlock)
+#
+doorA        0x10    /dev/ttyS2    1        0x7f       -       -             -        -          0           1         -
