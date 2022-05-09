@@ -2,12 +2,9 @@
 #include <gpiod.h>
 #include <string.h>
 
+#include "config.h"
 #include "error_reporting.h"
 #include "gpios/gpio.h"
-
-#ifndef GPIO_DEVICE
-#define GPIO_DEVICE "gpiochip0"
-#endif
 
 #ifdef ACTIVE_ON_GND  // input activated via connect to GND
 #define GPIOD_ACTIVE true
@@ -15,6 +12,10 @@
 #else                 // input activated via connect to 3.3V
 #define GPIOD_ACTIVE false
 #define GPIOD_FLAGS  GPIOD_CTXLESS_FLAG_BIAS_PULL_DOWN
+#endif
+
+#ifndef GPIO_DEVICE
+#define GPIO_DEVICE "gpiochip0"
 #endif
 
 enum {
@@ -35,7 +36,9 @@ enum {
 	PG07 = 6*32+7,
 };
 
+#ifndef DOOR_OUTPUTS_NUM
 #define DOOR_OUTPUTS_NUM 4
+#endif
 const unsigned int outputs[] = {DO_UNLOCK_DOOR_1, DO_UNLOCK_DOOR_2, PG06, PG07};
 
 #define INPUTS_DOORS 2

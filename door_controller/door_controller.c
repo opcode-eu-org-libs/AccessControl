@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include <string.h>
 
+#include "config.h"
 #include "error_reporting.h"
 
 #include "door_controller.h"
@@ -10,24 +11,6 @@
 
 #include "readers/reader.h"
 #include "gpios/gpio.h"
-
-#ifndef DOOR_OPEN_TIME
-#define DOOR_OPEN_TIME  13
-#endif
-
-#ifndef TWO_FACTOR_TIME
-#define TWO_FACTOR_TIME 23
-#endif
-
-#ifndef MAIN_LOOP_SLEEP_TIME
-#define MAIN_LOOP_SLEEP_TIME 300000
-#endif
-
-#ifndef ALARM_RESEND_TIMER
-#define ALARM_RESEND_TIMER 60
-#endif
-
-#define ALARM_MASK 1<<3 // disable alarm on missing DI_IS_DOOR_LOCK signal
 
 Door* getDoorByName(Door* doors, int doorsCount, const char* name) {
 	for (int i=0; i<doorsCount; ++i) {
