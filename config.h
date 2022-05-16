@@ -25,7 +25,12 @@
 
 #if 0 // optional defines:
 
-#define DOOR_OUTPUTS_NUM 2 // set number of "door unlock" outputs (must be less then physical outputs supported by gpio module, eg. 4 for gpio-orangepizero.c)
+#define DOOR_OUTPUTS_NUM 2 // set number of "door unlock" outputs
+
+#define SIGNAL_OUTPUTS_NUM 2 // set number of outputs for alarm / door-open signalisation (buzzer)
+
+// DOOR_OUTPUTS_NUM + SIGNAL_OUTPUTS_NUM  (must be less-equal then physical outputs supported by gpio module, eg. 4 for gpio-orangepizero.c)
+
 
 #define NO_PULLUPDOWN // disable pull up/down resistors on inputs
 

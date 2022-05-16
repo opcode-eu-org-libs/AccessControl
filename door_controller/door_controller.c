@@ -21,18 +21,26 @@ Door* getDoorByName(Door* doors, int doorsCount, const char* name) {
 	return NULL;
 }
 
-void door_signal(Door* door, char signal) {
+void signalDoorStatus(Door* door, uint8_t signal) {
 	if (door->readerA.reader)
 		reader_signal(signal, door->readerA.reader);
 	if (door->readerB.reader)
 		reader_signal(signal, door->readerB.reader);
 }
 
-void signalDoorStatus(Door* door) {
+void signalDoorDisableStatus(Door* door) {
 	if (door->admDisableMask || door->airLockMask)
-		door_signal(door, SIGNAL_BLOCKED);
+		signalDoorStatus(door, SIGNAL_BLOCKED);
 	else
-		door_signal(door, SIGNAL_UNBLOCKED);
+		signalDoorStatus(door, SIGNAL_UNBLOCKED);
+}
+
+void signalDoorAlarmStatus(Door* door, bool on) {
+	set_alarm_signal(on, 1 << (door->maskOffset));
+	// if (on)
+		// signalDoorStatus(door, SIGNAL_ALARM);
+	// else
+		// signalDoorStatus(door, SIGNAL_NOALARM);
 }
 
 void resetDoorAuth(DoorReader* doorReader) {
@@ -55,7 +63,7 @@ void airLockOnPartner(Door* door, int32_t mask) {
 		door->airLockPartnerLocal->airLockMask = door->airLockPartnerLocal->maskFull & mask; // set airlock blockade on partner
 	}
 	
-	signalDoorStatus(door);
+	signalDoorDisableStatus(door->airLockPartnerLocal);
 }
 
 uint32_t unlock_door(Door* door, uint32_t mask) {
@@ -65,7 +73,7 @@ uint32_t unlock_door(Door* door, uint32_t mask) {
 		set_door_state(DO_UNLOCK, mask);
 		sendEvent(EVENT_DOOR_UNLOCK, door->doorName, mask);
 		door->door_lock_timer = DOOR_OPEN_TIME;
-		door_signal(door, SIGNAL_DOOR_OPEN);
+		signalDoorStatus(door, SIGNAL_DOOR_OPEN);
 	}
 	return mask;
 }
@@ -76,7 +84,7 @@ uint32_t lock_door(Door* door, uint32_t mask) {
 		set_door_state(DO_LOCK, mask);
 		airLockOnPartner(door, 0);
 		sendEvent(EVENT_DOOR_LOCK, door->doorName, mask);
-		door_signal(door, SIGNAL_DOOR_LOCK);
+		signalDoorStatus(door, SIGNAL_DOOR_LOCK);
 	}
 	return mask;
 }
@@ -88,6 +96,21 @@ void check_inputs(Door* doors, int doorsCount) {
 	for (int i=0; i<doorsCount; ++i) {
 		Door* door = &(doors[i]);
 		uint8_t input = inputVal[i];
+		
+		uint8_t alarm = ((input | ALARM_MASK) & (DI_IS_EMERGENCY_OPEN | DI_IS_DOOR_CLOSE | DI_IS_DOOR_LOCK)) ^ (DI_IS_DOOR_CLOSE | DI_IS_DOOR_LOCK);
+		if (alarm) {
+			if (door->alarm_timers == 0) {
+				door->alarm_timers = ALARM_RESEND_TIMER;
+			} else if (--door->alarm_timers == 0) {
+				sendEvent(EVENT_DOOR_OPEN_ALARM, door->doorName, alarm);
+				signalDoorAlarmStatus(door, true);
+				door->alarm_timers = ALARM_RESEND_TIMER;
+			}
+		} else {
+			door->alarm_timers = 0;
+			signalDoorAlarmStatus(door, false);
+		}
+		
 		uint8_t diff;
 		if (door->lastInput & DI_STATE_IS_DIFF) {
 			diff = door->lastInput;
@@ -116,6 +139,7 @@ void check_inputs(Door* doors, int doorsCount) {
 				} else {
 					sendEvent(EVENT_DOOR_IS_OPEN, door->doorName);
 					airLockOnPartner(door, -1);
+					signalDoorAlarmStatus(door, true);
 				}
 			}
 			if (diff & DI_IS_DOOR_LOCK) {
@@ -126,18 +150,6 @@ void check_inputs(Door* doors, int doorsCount) {
 				}
 			}
 			door->lastInput = input;
-		}
-		
-		uint8_t alarm = ((input | ALARM_MASK) & (DI_IS_EMERGENCY_OPEN | DI_IS_DOOR_CLOSE | DI_IS_DOOR_LOCK)) ^ (DI_IS_DOOR_CLOSE | DI_IS_DOOR_LOCK);
-		if (alarm) {
-			if (door->alarm_timers == 0) {
-				door->alarm_timers = ALARM_RESEND_TIMER;
-			} else if (--door->alarm_timers == 0) {
-				sendEvent(EVENT_DOOR_OPEN_ALARM, door->doorName, alarm);
-				door->alarm_timers = ALARM_RESEND_TIMER;
-			}
-		} else {
-			door->alarm_timers = 0;
 		}
 	}
 }

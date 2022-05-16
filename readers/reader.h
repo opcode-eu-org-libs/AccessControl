@@ -33,7 +33,7 @@ enum {
  SIGNAL_UNBLOCKED = 0x82,
 };
 
-void reader_signal(char signal, Reader* reader);
+void reader_signal(uint8_t signal, Reader* reader);
 
 extern const uint8_t defaultAddress;
 

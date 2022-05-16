@@ -17,3 +17,5 @@ enum DoorOperations {
 void set_door_state(enum DoorOperations doorOperation, int32_t mask);
 
 void get_input_state(uint8_t *values, int32_t mask);
+
+void set_alarm_signal(bool on, int32_t mask);

@@ -144,7 +144,7 @@ void clear_reader_data(Reader* reader) {
 	reader->pin_buf_pos = 0;
 }
 
-void reader_signal(char signal, Reader* reader) {
+void reader_signal(uint8_t signal, Reader* reader) {
 	struct osdp_packet packet;
 	switch(signal){
 		case SIGNAL_OK:

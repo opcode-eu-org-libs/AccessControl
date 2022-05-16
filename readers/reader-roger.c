@@ -72,7 +72,7 @@ void get_reader_data(Reader* reader, int input_timeout, void* user_data) {
 void clear_reader_data(Reader* reader) {
 }
 
-void reader_signal(char signal, Reader* reader) {
+void reader_signal(uint8_t signal, Reader* reader) {
 	uint8_t xbuf[16], xbuflen=16;
 	
 	switch(signal){

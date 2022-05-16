@@ -37,7 +37,11 @@ enum {
 };
 
 #ifndef DOOR_OUTPUTS_NUM
-#define DOOR_OUTPUTS_NUM 4
+ #ifdef SIGNAL_OUTPUTS_NUM
+  #define DOOR_OUTPUTS_NUM (4 - SIGNAL_OUTPUTS_NUM)
+ #else
+  #define DOOR_OUTPUTS_NUM 4
+ #endif
 #endif
 const unsigned int outputs[] = {DO_UNLOCK_DOOR_1, DO_UNLOCK_DOOR_2, PG06, PG07};
 
@@ -60,6 +64,20 @@ void set_door_state(enum DoorOperations doorOperation, int32_t mask) {
 			#endif
 		}
 	}
+}
+
+void set_alarm_signal(bool on, int32_t mask) {
+	#ifdef SIGNAL_OUTPUTS_NUM
+	for (int i=0; i<SIGNAL_OUTPUTS_NUM; ++i) {
+		if (mask & (1<<i)) {
+			int ret  __attribute__((unused));
+			ret = gpiod_ctxless_set_value(GPIO_DEVICE, outputs[DOOR_OUTPUTS_NUM + i], on, false, "gpioset", 0, 0);
+			#if GPIO_DEBUG
+			printf("Set alarm output to %d, mask=0x%02X, ret=%d\n", on, mask, ret);
+			#endif
+		}
+	}
+	#endif
 }
 
 void get_input_state(uint8_t *values, int32_t mask) {

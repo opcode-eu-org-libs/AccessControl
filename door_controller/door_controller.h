@@ -69,6 +69,8 @@ Door* getDoorByName(Door* doors, int doorsCount, const char* name);
 void mainLoop(Door* doors, int doorsCount, sqlite3 *database);
 uint32_t unlock_door(Door* door, uint32_t mask);
 uint32_t lock_door(Door* door, uint32_t mask);
-void signalDoorStatus(Door* door);
+
+void signalDoorStatus(Door* door, uint8_t signal);
+void signalDoorDisableStatus(Door* door);
 
 #endif

@@ -143,7 +143,7 @@ void check_network(struct Controler *ctrl) {
 					doorObj->admDisableMask = arg2;
 					ret += db_set_unset(door, "lock",   arg2, DB_UNSET, ctrl);
 					ret += db_set_unset(door, "unlock", arg2, DB_SET, ctrl);
-					signalDoorStatus(doorObj);
+					signalDoorDisableStatus(doorObj);
 				} else if (strcmp(arg1, "lock") == 0) {
 					doorObj->admDisableMask = 0;
 					doorObj->airLockMask = 0;
@@ -151,7 +151,7 @@ void check_network(struct Controler *ctrl) {
 					doorObj->admDisableMask = arg2;
 					ret += db_set_unset(door, "unlock", arg2, DB_UNSET, ctrl);
 					ret += db_set_unset(door, "lock",   arg2, DB_SET, ctrl);
-					signalDoorStatus(doorObj);
+					signalDoorDisableStatus(doorObj);
 				} else {
 					ret = 1;
 				}
@@ -163,7 +163,7 @@ void check_network(struct Controler *ctrl) {
 				if (db_set_unset(door, arg1, arg2, DB_UNSET, ctrl) == 0) {
 					if (strcmp(arg1, "unlock") == 0 || strcmp(arg1, "lock") == 0) {
 						doorObj->admDisableMask = 0;
-						signalDoorStatus(doorObj);
+						signalDoorDisableStatus(doorObj);
 					}
 					sendto(ctrl->sh, "OK\n", 3, MSG_DONTWAIT, (struct sockaddr *) &from, fromlen);
 					return;
@@ -172,13 +172,11 @@ void check_network(struct Controler *ctrl) {
 				if (strcmp(arg1, "unlock") == 0) {
 					if (unlock_door(doorObj, arg2)) {
 						sendto(ctrl->sh, "OK\n", 3, MSG_DONTWAIT, (struct sockaddr *) &from, fromlen);
-						signalDoorStatus(doorObj);
 						return;
 					}
 				} else if (strcmp(arg1, "lock") == 0) {
 					if (lock_door(doorObj, arg2)) {
 						sendto(ctrl->sh, "OK\n", 3, MSG_DONTWAIT, (struct sockaddr *) &from, fromlen);
-						signalDoorStatus(doorObj);
 						return;
 					}
 				} else if (strcmp(arg1, "block") == 0) {
@@ -241,7 +239,7 @@ int init_remote_control(int port, const char* statusDbPath, Door* doors, int doo
 			lock_door(doorObj, arg2);
 			doorObj->admDisableMask = arg2;
 		}
-		signalDoorStatus(doorObj);
+		signalDoorDisableStatus(doorObj);
 	}
 	sqlite3_finalize(stmt);
 
