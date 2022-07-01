@@ -37,5 +37,6 @@
 #define ACTIVE_ON_GND // inputs are active when short to gnd (electrical: when set - use pullup, when not set - use pull down)
 
 #define REVERSE_INPUT_LOGIC // bitmask of inputs to reverse (see InputTypes in gpio.h for bits description)
+#define REVERSE_OUTPUT_LOGIC // bitmask of inputs to reverse
 
 #endif
