@@ -103,7 +103,7 @@ void sendEvent(int eventType, const char* door, ...) {
 
 	int bufPos = 0;
 	if (eventHost)
-		bufPos = snprintf(cmdBuf, BUF_SIZE, "wget -q -O /dev/null 'http://%s/event?type=%s", eventHost, eventNames[eventType]);
+		bufPos = snprintf(cmdBuf, BUF_SIZE, "wget -q -O /dev/null 'http://%s/event?door=%s&type=%s", door, eventHost, eventNames[eventType]);
 	CHECK_BUFFER_OVERFLOW(bufPos);
 	
 	va_list vl;
