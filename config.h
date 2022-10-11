@@ -1,5 +1,5 @@
 #if __has_include("config_user.h")
-# include "myconfig.h"
+# include "config_user.h"
 #endif 
 
 #ifndef DOOR_OPEN_TIME
